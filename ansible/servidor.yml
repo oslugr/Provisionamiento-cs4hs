@@ -1,0 +1,31 @@
+---
+- hosts: servidor
+  sudo: yes
+  tasks:
+    - name: Instalar apache
+      yum: pkg=httpd state=latest
+    - name: Nos aseguramos que apache esta lanzado
+      service: name=httpd state=started
+    - name: Instalar servidor mysql
+      yum: pkg=mysql-server state=present
+    - name: Nos aseguramos que el servidor de mysql esta lanzado
+      service: name=mysqld state=started
+    - name: Instalar php
+      yum: pkg=php state=present 
+    - name: Instalar php-mysql
+      yum: pkg=php-mysql state=present
+    - name: instalar modulo de php para 
+      yum:  pkg=php-mysql.i686 state=present
+    - name: Configuramos los servicios para iniciarse siempre
+      command: chkconfig httpd on && chkconfig mysqld on
+    - name: Descargarmos wordpress
+      command: wget http://wordpress.org/latest.tar.gz
+    - name: Descomprimimos el archvio de wordpress
+      command: tar -xzvf latest.tar.gz 
+    - name: Copiamos el contenido de la carpeta wordpress
+      command: cp ~/wordpress/wp-config-sample.php ~/wordpress/wp-config.php
+      command: sudo cp -r ~/wordpress/* /var/www/html
+    - name: Reniciamos apache
+      service: name=httpd state=restarted
+
+
